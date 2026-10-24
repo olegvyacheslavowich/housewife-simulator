@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2b2140">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Домохозяйка: Вахта</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- джойстик -->
+<div id="joy"><div id="joyKnob"></div></div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div id="vignette"></div>
+  <div id="topbar">
+    <div class="info">
+      <div id="hDay">День 1</div>
+      <div class="row"><span id="hTime">09:00</span><span id="hMoney">0 ₽</span></div>
+      <div class="bars">
+        <div class="mb" title="Энергия">⚡<div class="track"><div id="bEnergy" class="fill"></div></div></div>
+        <div class="mb" title="Настроение">🙂<div class="track"><div id="bMood" class="fill"></div></div></div>
+        <div class="mb" title="Сытость">🍽️<div class="track"><div id="bFood" class="fill"></div></div></div>
+      </div>
+      <div id="hNext" class="hidden"></div>
+      <div id="hTimers"></div>
+    </div>
+    <button id="phoneBtn" aria-label="Телефон">📱<span id="phoneBadge"></span></button>
+  </div>
+  <div id="urgent" class="hidden"></div>
+  <button id="incident" class="hidden"><span id="incText"></span><b id="incTime"></b></button>
+  <div id="cross"></div>
+  <div id="prompt" class="hidden">
+    <span id="promptText"></span>
+    <button id="promptBtn">✋ Действие</button>
+  </div>
+  <div id="guide" class="hidden">
+    <svg id="gArrow" viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="22" fill="rgba(30,24,46,.9)" stroke="#ffc56b" stroke-width="2"/><path d="M24 8 L35 30 L24 25 L13 30 Z" fill="#ffc56b"/></svg>
+    <div class="gtxt"><b id="gWhat"></b><small id="gWhere"></small></div>
+  </div>
+  <button id="roomBtn" data-room="hall">📍 Прихожая ▾</button>
+</div>
+
+<div id="toasts"></div>
+
+<!-- обучение -->
+<div id="tut" class="hidden">
+  <div id="tStep"></div>
+  <div id="tText"></div>
+  <div id="tGoal"></div>
+  <div class="tbtns">
+    <button id="tSkip">Пропустить обучение</button>
+    <button id="tWait" class="btn" hidden>⏩ Подождать</button>
+    <button id="tNext" class="btn primary" hidden>Понятно →</button>
+  </div>
+</div>
+
+<!-- засыпание: веки закрываются -->
+<div id="eyes" class="hidden"><div class="lid top"></div><div class="lid bottom"></div><div id="eyesText"></div></div>
+
+<!-- карточка действий -->
+<div id="sheet" class="hidden">
+  <div class="sheetbox">
+    <div class="sheethead"><h2 id="sheetTitle"></h2><button id="sheetClose" aria-label="Закрыть">✕</button></div>
+    <div id="sheetInfo"></div>
+    <div id="sheetList"></div>
+  </div>
+</div>
+
+<!-- телефон -->
+<div id="phone" class="hidden">
+  <div class="phonebox">
+    <div class="phonehead"><b>📱 Телефон</b><button id="phoneClose" aria-label="Закрыть">✕</button></div>
+    <div id="phoneTabs">
+      <button data-tab="today">📋<span>Сегодня</span></button>
+      <button data-tab="family">👨‍👩‍👧‍👦<span>Семья</span></button>
+      <button data-tab="house">🏠<span>Дом</span></button>
+      <button data-tab="hobby">🎨<span>Хобби</span></button>
+      <button data-tab="shop">🛋️<span>Мебель</span></button>
+      <button data-tab="log">📜<span>Журнал</span></button>
+      <button data-tab="settings">⚙️<span>Опции</span></button>
+    </div>
+    <div id="phoneBody"></div>
+  </div>
+</div>
+
+<!-- прогресс действия -->
+<div id="progress" class="hidden">
+  <div class="progbox">
+    <div id="progClock">00:00</div>
+    <div id="progLabel"></div>
+    <div class="progtrack"><div id="progBar"></div></div>
+  </div>
+</div>
+
+<!-- итоги дня: полноэкранные слайды -->
+<div id="night" class="hidden">
+  <button id="nSkip">Пропустить ⏭</button>
+  <div id="nTrack"></div>
+  <div class="nfoot">
+    <div id="nDots"></div>
+    <button id="nNext" class="btn primary">Далее →</button>
+  </div>
+</div>
+
+<!-- модальное окно -->
+<div id="modal" class="hidden">
+  <div class="modalbox">
+    <h2 id="modalTitle"></h2>
+    <div id="modalBody"></div>
+    <div id="modalBtns"></div>
+  </div>
+</div>
+
+<!-- титульный экран -->
+<div id="title" class="hidden">
+  <div class="titlebox">
+    <div class="logo">🏡🧺🐕</div>
+    <h1>Домохозяйка:<br>Вахта</h1>
+    <p class="tag">Муж на вахте. Дети на шее. Собака на ковре.<br>30 дней. Вы справитесь. Наверное.</p>
+    <button class="btn primary big" id="btnContinue">▶ Продолжить</button>
+    <button class="btn big" id="btnNew">✨ Новая игра</button>
+    <p class="hintsmall" id="hintTitle">Тап по полу — идти, тап по предмету — подойти и действовать.</p>
+  </div>
+</div>
+
+<script src="libs/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/names.js"></script>
+<script src="js/texts.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/controls.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/tutorial.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
