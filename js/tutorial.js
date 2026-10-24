@@ -99,8 +99,8 @@
     shownStep = HW.S.tut.step;
     box.classList.remove('hidden');
     box.classList.remove('collapsed');
-    // шаг с заданием через 12 секунд сворачивается до одной цели, чтобы не закрывать обзор
-    if (st.goal) collapseTimer = setTimeout(() => { box.classList.add('collapsed'); HW.UI.layoutTop(); }, 12000);
+    // шаг с заданием сворачивается до одной цели, чтобы не закрывать обзор (на телефоне — быстрее)
+    if (st.goal) collapseTimer = setTimeout(() => { box.classList.add('collapsed'); HW.UI.layoutTop(); }, innerWidth <= 600 ? 7000 : 12000);
     $('tStep').textContent = `🎓 ${HW.S.tut.step + 1} из ${STEPS.length} · ${st.title}  ▾`;
     $('tText').textContent = typeof st.text === 'function' ? st.text() : st.text;
     $('tGoal').textContent = st.goal ? '🎯 ' + st.goal : '';
